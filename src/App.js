@@ -15,7 +15,7 @@ class App extends Component{
         this.state = { page:1 , signupLogin: 0, logged: false, auth: false, err: 0};
         this.user  = { username: '', avatar: ''};
         this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
-        this.err   = { no: 0 };
+        this.error.bind(this);
     }
     //0 : Signup
     //0 : no error, 1 : wrong email format (client side), 2 : wrong email/password, 3 : empty textfields
@@ -31,12 +31,13 @@ class App extends Component{
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))  {  return (true);  }   
         return (false);  
     }  
-    error(val){
-        this.err.no = val;
-        //this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+    error = (val) => {
+        this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+        /*
         if(val === 1)       {alert("You have entered an invalid email address!");                               }
         else if(val ===2)   {alert("Whoops! We couldn’t find an account for that email address and password."); }
         else if(val === 3)  {alert("All fields are required!");                                                 }
+        */
     }
     
     signup = (newUser) => {
@@ -90,7 +91,7 @@ class App extends Component{
                         signupPage={this.signupPage.bind(this)}     loginPage={this.loginPage.bind(this)}
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
-                        logout={this.logout.bind(this)}             err={this.err.no}
+                        logout={this.logout.bind(this)}             err={this.state.err}
                     />
                 </MuiThemeProvider>
             </div>
