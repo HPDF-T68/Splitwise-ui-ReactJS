@@ -37,12 +37,12 @@ class CurrentUser extends Component{
                                 <i style={{verticalAlign:'middle'}} className="material-icons">arrow_drop_down</i>
                             </span>}
                         icon={<Avatar src="images/avatar1.png" size={30} />} />
-                        <Popover
+                        <Popover   
                             open={this.state.open} onRequestClose={this.handleRequestClose}
                             anchorEl={this.state.anchorEl} animation={PopoverAnimationVertical}
                             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                             targetOrigin={{horizontal: 'left', vertical: 'top'}} >
-                            <Menu>
+                            <Menu desktop={true} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
                                 <MenuItem primaryText="Your Account" />
                                 <MenuItem primaryText="Create a group" />
                                 <MenuItem primaryText="Fairness calculators" />
@@ -82,12 +82,5 @@ class SWAppBar extends Component{
         );
     }
 }
-//onRightIconButtonClick={}
-//http://www.material-ui.com/#/components/icon-menu according to current user
-//http://www.material-ui.com/#/components/popover
+
 export default SWAppBar;
-/*
-//<FlatButton target="_blank" onClick={this.props.toggle}
-  //                   label={<span style={{color: muiTheme.palette.primaryTextColor}}>L o g i n</span>} 
-    //                />
-*/
