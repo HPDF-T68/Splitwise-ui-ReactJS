@@ -3,7 +3,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import muiTheme from './muiTheme.js';
 import SplitWise from './SplitWise.js';
 import Snackbar from 'material-ui/Snackbar';
-
+/*** change logged state to  false ***/
 //login/signup has a separate 'signupLogin: 0/1' because there is interchangable tabs user can go independent
 //of app state on start up i.e. when user is not logged in
 //page 0 default welcome page from where user gets into app login/signup options
@@ -12,9 +12,11 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        this.state = { page:1 , signupLogin: 0, logged: false, auth: false, err: 0, errorOpen: false};
+        this.state = { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
         this.user  = { username: '', avatar: ''};
         this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
+        this.friends={ 1:'friend 1', 2:'friend 2'};
+        this.groups= { 1:'group  1', 2:'group  2'};
         this.error.bind(this);
     }
     //0 : Signup
@@ -97,7 +99,8 @@ class App extends Component{
                         signupPage={this.signupPage.bind(this)}     loginPage={this.loginPage.bind(this)}
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
-                        logout={this.logout.bind(this)}             
+                        logout={this.logout.bind(this)}
+                        friends={this.friends}                      groups={this.groups}
                     />
                 <div className="error-display">
                     {(this.state.err===1)
