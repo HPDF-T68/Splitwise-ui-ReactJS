@@ -9,7 +9,6 @@ import Snackbar from 'material-ui/Snackbar';
 class LoginSignup extends Component{
     constructor(){
         super();
-        this.state = {err: 0, errorOpen: false};
         this.newUser  = {username:'', email:'', password:''};
         this.authUser = {email:'', password:''};
     }
@@ -23,75 +22,16 @@ class LoginSignup extends Component{
     loginEmail(evt)     {   this.authUser.email   = evt.target.value;   };
     loginPassword(evt)  {   this.authUser.password= evt.target.value;   };
     
-    handleError1Click = () => {
-        this.setState({errorOpen: false});
-    };
-    handleError2Click = () => {
-        this.setState({errorOpen: false});
-        alert('Forgotten Password : This functionality is still in development');
-    };
-    handleErrorRequestClose = () => {
-        this.setState({errorOpen: false});
-    };
-    check(){
-        this.state.err = this.props.err;
-        if(this.props.err === 1)        {   this.state.err = 1; }
-        else if(this.props.err === 2)   {   this.state.err = 2; }
-        console.log("check - this.props.err "+this.props.err);
-    }
     signup = () => {
         this.props.signup(this.newUser);
-        //check for error 1
-        this.check();
-        this.setState({ errorOpen: true});
         this.copyCredentials();
     };
     login = () => {
         this.props.login(this.authUser);
-        //check for error 2
-        this.check();
-        this.setState({ errorOpen: true});
-        //console.log("after check - this.state.err "+this.state.err);
     };
     render(){
         return(
             <div style={{display:'flex', flexDirection:'row'}}>
-                {(this.state.err===1)
-                ?
-                    <Snackbar
-                        open={this.state.errorOpen}
-                        message="Please enter email in correct format"
-                        action="Try Again"
-                        autoHideDuration={5000}
-                        onActionClick={this.handleError1Click.bind(this)}
-                        onRequestClose={this.handleErrorRequestClose.bind(this)}
-                    />
-                :   <span></span>
-                }
-                {(this.state.err===2)
-                ?
-                    <Snackbar
-                        open={this.state.errorOpen}
-                        message="Whoops! We couldn’t find an account for that email address and password."
-                        action="Resolve"
-                        autoHideDuration={5000}
-                        onActionClick={this.handleError2Click.bind(this)}
-                        onRequestClose={this.handleErrorRequestClose.bind(this)}
-                    />
-                :   <span></span>
-                }
-                {(this.state.err===3)
-                ?
-                    <Snackbar
-                        open={this.state.errorOpen}
-                        message="All fields are required"
-                        action="Try Again"
-                        autoHideDuration={5000}
-                        onActionClick={this.handleError1Click.bind(this)}
-                        onRequestClose={this.handleErrorRequestClose.bind(this)}
-                    />
-                :   <span></span>
-                }
                 <img style={Styles.LoginSignupImg} src="images/big_logo.png" />
                 {(this.props.signupLogin === 0)
                 ?

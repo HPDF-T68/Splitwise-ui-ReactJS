@@ -21,9 +21,7 @@ class SplitWise extends Component{
                 :
                     <LoginSignup logged={this.props.logged}     signupLogin={this.props.signupLogin}
                         signupPage={this.props.signupPage}      loginPage={this.props.loginPage}
-                        signup={this.props.signup}              login={this.props.login}
-                        err={this.props.err}
-                    />
+                        signup={this.props.signup}              login={this.props.login}/>
                 }
             </div>
         );

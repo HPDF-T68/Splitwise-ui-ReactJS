@@ -2,17 +2,17 @@ import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import muiTheme from './muiTheme.js';
 import SplitWise from './SplitWise.js';
+import Snackbar from 'material-ui/Snackbar';
 
-//use SNACKBAR for notifications
-//login/signup has a separate 'signupLogin: 0/1' because there is interchangable tabs user can go independent 
+//login/signup has a separate 'signupLogin: 0/1' because there is interchangable tabs user can go independent
 //of app state on start up i.e. when user is not logged in
-
 //page 0 default welcome page from where user gets into app login/signup options
 //page1 is the base page : Dashboard if logged in or else show login/signup
+
 class App extends Component{
     constructor(){
         super();
-        this.state = { page:1 , signupLogin: 0, logged: false, auth: false, err: 0};
+        this.state = { page:1 , signupLogin: 0, logged: false, auth: false, err: 0, errorOpen: false};
         this.user  = { username: '', avatar: ''};
         this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
         this.error.bind(this);
@@ -32,21 +32,27 @@ class App extends Component{
         return (false);  
     }  
     error = (val) => {
+        this.setState({ errorOpen: true});
         this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
-        /*
-        if(val === 1)       {alert("You have entered an invalid email address!");                               }
-        else if(val ===2)   {alert("Whoops! We couldn’t find an account for that email address and password."); }
-        else if(val === 3)  {alert("All fields are required!");                                                 }
-        */
     }
     
+    handleError1Click = () => {
+        this.setState({errorOpen: false});
+    };
+    handleError2Click = () => {
+        this.setState({errorOpen: false});
+        alert('Forgotten Password : This functionality is still in development');
+    };
+    handleErrorRequestClose = () => {
+        this.setState({errorOpen: false});
+    };
     signup = (newUser) => {
         console.log(newUser);
         if((newUser.username==='')||(newUser.email==='')||(newUser.password==='')){
-            this.error(3);  console.log("error in app.js - "+this.state.err);
+            this.error(3);
         }
         else if(!this.ValidateEmail(newUser.email)){
-            this.error(1);  console.log("error in app.js - "+this.state.err);
+            this.error(1);
         }
         else{
             //---// save data
@@ -69,30 +75,69 @@ class App extends Component{
             //this.setState({err: 2}); not working why?
             //console.log("error in app.js - "+this.state.err);
             this.error(2);
-            console.log("error in app.js - "+this.state.err);
         }
         if(this.state.auth){
             console.log('authenticated user');
             this.setState({logged: true});
-            //get user name and other data and populate the 'this.user'
-            
+            //get user name and other data and populate the 'this.user'    
             //page 2
             //this.setState({page: 2});   
         }
     };
     
     logout(){       this.setState({logged: false, signupLogin: 1});     }
+    
     render(){
         return(
             <div className="App">
                 <MuiThemeProvider muiTheme={muiTheme}>
+                <div>
                     <SplitWise  page={this.state.page}
                         onTitleClick={this.onTitleClick.bind(this)} signupLogin={this.state.signupLogin}
                         signupPage={this.signupPage.bind(this)}     loginPage={this.loginPage.bind(this)}
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
-                        logout={this.logout.bind(this)}             err={this.state.err}
+                        logout={this.logout.bind(this)}             
                     />
+                <div className="error-display">
+                    {(this.state.err===1)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Please enter email in correct format"
+                                action="Try Again"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+                        {(this.state.err===2)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Whoops! We couldn’t find an account for that email address and password."
+                                action="Resolve"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError2Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+                        {(this.state.err===3)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="All fields are required"
+                                action="Try Again"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+                </div>                    
+                </div>
                 </MuiThemeProvider>
             </div>
         );
