@@ -19,6 +19,9 @@ const Styles = {
                      padding: '0px 4px', boxShadow: 'inset 0px 0px 3px #d3d3d3', color:'#acabab',},
     textFieldother: {border: '1px solid #b1b0b0', borderRadius:5, fontSize: 25, width: 300, height: 40,
                      padding: '0px 4px', boxShadow: 'inset 0px 0px 3px #d3d3d3'},
+    dashboardMenuList:{display: 'inline-block', float: 'left', margin: '16px 32px 16px 0'},
+    menuDisabled:   {backgroundColor:'#EAEAEAFF',padding:'0px 10px', color:'#969696FF', border:'0px 0px 1px 0px red'},
+    menuNav:        {color:'#6C6C6CFF',}
 };
 
 export default Styles;

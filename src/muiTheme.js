@@ -9,8 +9,6 @@ const muiTheme = getMuiTheme({
     appBar:     { height: 35, color: lightGreenA700},
     flatButton: { textTransform: 'none', height: 25},
   raisedbutton: {color: grey50, },
-    menuitem:   { height:10, backgroundColor: lightGreenA700},
-    
 });
-
+//    menuitem:   { height:10, backgroundColor: lightGreenA700},    
 export default muiTheme;
