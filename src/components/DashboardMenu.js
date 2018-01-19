@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import muiTheme from '../muiTheme.js';
 import Styles from '../Styles.js';
-import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
@@ -29,12 +28,12 @@ class DashboardMenu extends Component{
 	}
 	render(){
 		return(
-			<Paper style={Styles.dashboardMenuList}>
-		      	<Menu desktop={true} width={180} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
+			<div style={Styles.dashboardMenuList}>
+		      	<Menu desktop={true} width={150} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
 			        <MenuItem leftIcon={<i className="material-icons">dashboard</i>} primaryText="Dashboard" innerDivStyle={Styles.menuNav}/>
 			        <MenuItem leftIcon={<i className="material-icons">flag</i>} primaryText="Recent activity" innerDivStyle={Styles.menuNav}/>
 			        <MenuItem leftIcon={<i className="material-icons">list</i>} primaryText="All expenses" innerDivStyle={Styles.menuNav}/>
-			        <Divider />
+			        <br />
 			        <MenuItem primaryText="GROUPS" secondaryText={<b>+ add</b>} innerDivStyle={Styles.menuDisabled} />
 			        <Divider style={{'marginTop':'0px'}}/>
 			        {	this.state.groups.map((groups, index) => (
@@ -50,7 +49,7 @@ class DashboardMenu extends Component{
 						))
 			        }
 		    	</Menu>
-		    </Paper>
+		    </div>
 		);
 	}
 }

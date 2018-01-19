@@ -12,11 +12,12 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        this.state = { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
+        this.state = { page:1 , signupLogin: 0, logged: true, err: 0, errorOpen: false};
         this.user  = { username: '', avatar: ''};
-        this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
+        this.account={ totalBalance: 10, youOwe: 20, youAreOwed: 30};
         this.friends={ 1:'friend 1', 2:'friend 2'};
         this.groups= { 1:'group  1', 2:'group  2'};
+        this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
         this.error.bind(this);
     }
     //0 : Signup
@@ -99,7 +100,7 @@ class App extends Component{
                         signupPage={this.signupPage.bind(this)}     loginPage={this.loginPage.bind(this)}
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
-                        logout={this.logout.bind(this)}
+                        logout={this.logout.bind(this)}             account={this.account}
                         friends={this.friends}                      groups={this.groups}
                     />
                 <div className="error-display">
