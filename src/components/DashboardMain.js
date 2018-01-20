@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import muiTheme from '../muiTheme.js';
 import Styles from '../Styles.js';
+import DetailsList from  './DetailsList.js';
+
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -40,6 +42,7 @@ class DashboardMain extends Component{
 						</div>
 					</div>
 				</div>
+				<DetailsList />
 			</Paper>
 		);
 	}
