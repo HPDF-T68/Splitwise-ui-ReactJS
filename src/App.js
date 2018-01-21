@@ -12,12 +12,23 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        this.state = { page:1 , signupLogin: 0, logged: true, err: 0, errorOpen: false};
-        this.user  = { username: '', avatar: ''};
-        this.account={ totalBalance: 10, youOwe: 20, youAreOwed: 30};
-        this.friends={ 1:'friend 1', 2:'friend 2'};
-        this.groups= { 1:'group  1', 2:'group  2'};
-        this.demo  = { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
+        this.state =    { page:1 , signupLogin: 0, logged: true, err: 0, errorOpen: false};
+        this.user  =    { username: '', avatar: ''};
+
+        this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
+        this.friends =  { 1:'friend 1', 2:'friend 2'};
+        this.groups =   { 1:'group  1', 2:'group  2'};
+        this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
+                            'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
+                          2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
+                            'paidBy':'friend 1',paid:84,'lentBy':'friend 2','lent':42},
+                          3:{'name':'Expense name 3','group':'group 1','year':2018,'month':'JAN','day':31,
+                            'paidBy':'friend 2',paid:55,'lentBy':'friend 2','lent':55},
+                          4:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
+                            'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
+                        };
+        this.demo =     { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
+
         this.error.bind(this);
     }
     //0 : Signup
@@ -102,6 +113,7 @@ class App extends Component{
                         logged={this.state.logged}                  username={this.user.username}
                         logout={this.logout.bind(this)}             account={this.account}
                         friends={this.friends}                      groups={this.groups}
+                        log={this.log}
                     />
                 <div className="error-display">
                     {(this.state.err===1)

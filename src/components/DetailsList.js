@@ -13,28 +13,28 @@ class DetailsList extends Component{
 	render(){
 		return(
 			<div>
-		    	<List>
+		    	<List style={Styles.padding0}>
 		    		<ListItem
 		    			leftIcon={
 		    				<div style={Styles.flexRow}>
 		    					<span style={Styles.listTimestamp}>
-		    						<span style={Styles.listMonth}>MNT</span><br/>
-		    						<span style={Styles.listDate}>99</span>
+		    						<span style={Styles.listMonth}>{this.props.month}</span><br/>
+		    						<span style={Styles.listDate}>{this.props.day}</span>
 		    					</span>
 		    					<i class="material-icons" style={Styles.listBill}>bookmark_border</i>
 		    				</div>
 		    			}
-          				primaryText={<span style={Styles.listPrimary}>Primary Name of expense<br/></span>}
-          				secondaryText={<span style={Styles.listSecondary}>Secondary</span>}
+          				primaryText={<span style={Styles.listPrimary}>{this.props.name}<br/></span>}
+          				secondaryText={<span style={Styles.listSecondary}>{this.props.group}</span>}
           				rightIcon={
 		    				<div style={Styles.listPayment}>
 		    					<span style={Styles.listPayedBy}>
-		    						<span style={Styles.listPayName}>Paid by friend</span><br/>
-									<span style={Styles.listPayAmt}>$ 99</span>
+		    						<span style={Styles.listPayName}>Paid by {this.props.paidBy}</span><br/>
+									<span style={Styles.listPayAmt}>$ {this.props.paid}</span>
 								</span>
 		    					<span>
-		    						<span style={Styles.listPayName}>Lent by friend</span><br/>
-									<span style={Styles.listLentAmt}>$ 99</span>
+		    						<span style={Styles.listPayName}>Lent by {this.props.lentBy}</span><br/>
+									<span style={Styles.listLentAmt}>$ {this.props.lent}</span>
 		    					</span>
 		    				</div>
 		    			}

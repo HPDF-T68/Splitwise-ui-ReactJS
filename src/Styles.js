@@ -2,6 +2,7 @@ import muiTheme from './muiTheme.js';
 
 const Styles = {
     flexRow:        {display:'flex', flexDirection:'row'},
+    padding0:       {padding:0},
     appbarTitle:    {cursor: 'pointer', marginLeft: 200, width: 'wrap-content',
                      fontSize: 16, fontFamily: 'serif', letterSpacing: 4},
     hasuraLogo:     {width:220, height:200, marginTop:50},

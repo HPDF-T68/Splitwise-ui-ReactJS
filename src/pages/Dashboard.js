@@ -9,7 +9,7 @@ class Dashboard extends Component{
         return(
             <div style={{display:'flex', flexDirection:'row', marginLeft:'190px'}}>
                 <DashboardMenu friends={this.props.friends}     groups={this.props.groups} />
-                <DashboardMain account={this.props.account} />
+                <DashboardMain account={this.props.account} 	log={this.props.log} />
                 <DashboardAside />
             </div>
         );

@@ -10,6 +10,18 @@ import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 
 class DashboardMain extends Component{
+	constructor(props){
+		super(props);
+		const log = [];
+		var lKeys = Object.keys(this.props.log);
+		var lLen  = lKeys.length;
+		for(let i=0; i<lLen; i++){
+			log.push({
+				details: this.props.log[ lKeys[i] ]
+			})
+		}
+		this.state = {log};
+	}
 	render(){
 		return(
 			<Paper style={Styles.dashboardMain}>
@@ -42,7 +54,15 @@ class DashboardMain extends Component{
 						</div>
 					</div>
 				</div>
-				<DetailsList />
+				{	this.state.log.map((log, index) => (
+							<DetailsList	key={index+1000}
+							year={log.details.year}		month={log.details.month}	day={log.details.day}
+							name={log.details.name}		group={log.details.group}
+							paidBy={log.details.paidBy}	paid={log.details.paid}
+							lentBy={log.details.lentBy}	lent={log.details.lent}	/>		
+					))
+			     }
+				
 			</Paper>
 		);
 	}
