@@ -62,7 +62,7 @@ class AddBillDialog extends Component{
       						<FlatButton	label="Save"	primary={true}	onClick={this.billSave.bind(this)}	/>
       					];
 		return(
-			<Dialog		title="Dialog With Custom Width"	modal={true}	autoScrollBodyContent={true}  
+			<Dialog		title="Add a new expenditure"	modal={true}	autoScrollBodyContent={true}  
 						actions={actions}					open={this.state.modalOpen}
 						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addBillBody}
 						contentStyle={Styles.addBillContent}>

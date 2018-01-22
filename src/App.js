@@ -16,7 +16,8 @@ class App extends Component{
         this.user  =    { username: '', avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
-        this.friends =  { 1:'friend 1', 2:'friend 2'};
+        this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
+        this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
         this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
         this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
@@ -98,11 +99,18 @@ class App extends Component{
             //this.setState({page: 2});   
         }
     };
-    logout(){       this.setState({logged: false, signupLogin: 1});     }
+    logout(){       this.setState({logged: false, signupLogin: 1});     };
 
     addBill = (billDetails) => {
         console.log(billDetails);
-    }
+    };
+    addFriends = (newFriends) => {
+        console.log(newFriends);
+    };
+    addGroup = (groupName, groupMembers) => {
+        console.log(groupName);
+        console.log(groupMembers);
+    };
     
     render(){
         return(
@@ -115,9 +123,11 @@ class App extends Component{
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
                         logout={this.logout.bind(this)}             account={this.account}
+                        users={this.users}
                         friends={this.friends}                      groups={this.groups}
                         log={this.log}                              
                         addBill={this.addBill.bind(this)}
+                        addGroup={this.addGroup.bind(this)}         addFriends={this.addFriends.bind(this)}
                     />
                 <div className="error-display">
                     {(this.state.err===1)

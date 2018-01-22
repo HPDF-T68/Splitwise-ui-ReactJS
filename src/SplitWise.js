@@ -17,9 +17,11 @@ class SplitWise extends Component{
                 />
                 {this.props.logged
                 ?
-                    <Dashboard  friends={this.props.friends}    groups={this.props.groups}
+                    <Dashboard  users={this.props.users}
+                                friends={this.props.friends}    groups={this.props.groups}
                                 account={this.props.account}    log={this.props.log}
                                 addBill={this.props.addBill}
+                                addGroup={this.props.addGroup}  addFriends={this.props.addFriends}
                                 />
                 :
                     <LoginSignup logged={this.props.logged}     signupLogin={this.props.signupLogin}
