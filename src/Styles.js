@@ -55,6 +55,11 @@ const Styles = {
     listPayAmt:     {fontWeight:'bold', color:'#5fcf00',lineHeight:'20px'},
     listLentAmt:    {fontWeight:'bold', color:'#f44b06',lineHeight:'20px'},
     listDivider:    {'marginTop':'0px'},
-};
 
+    addBillTitle:   {padding:'6px 24px', textAlign:'left', fontSize:'samll',
+                     backgroundColor:muiTheme.palette.baseDark, color:muiTheme.palette.primaryTextColor},
+    addBillContent: {width:'fit-content', maxWidth: 'none'},
+    addBillBody:    {padding:'5px 0px 5px 0px'},
+};
+//    padding: 10px 30px 10px;
 export default Styles;

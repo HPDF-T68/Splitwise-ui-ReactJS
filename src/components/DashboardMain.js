@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import muiTheme from '../muiTheme.js';
 import Styles from '../Styles.js';
 import DetailsList from  './DetailsList.js';
+import AddBillDialog from  './AddBillDialog.js';
 
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
@@ -20,17 +21,22 @@ class DashboardMain extends Component{
 				details: this.props.log[ lKeys[i] ]
 			})
 		}
-		this.state = {log};
+		this.state = {log:log, modalAddBill:false};
+	}
+	addBill(){
+		this.setState({ modalAddBill: true});
 	}
 	render(){
 		return(
 			<Paper style={Styles.dashboardMain}>
+		       	<AddBillDialog 	click={this.state.modalAddBill}		groups={this.props.groups}
+		       					addBill={this.props.addBill} /> 
 				<div style={Styles.dashboardBanner}>			
 					<b style={Styles.dashboardHeader}>Dashboard</b>
 					<span style={{'marginLeft':'150px'}}>
 						<FlatButton style={Styles.flatAddBill} labelStyle={Styles.dasboardFlatLabel}
 		                        backgroundColor='#ff4e00' hoverColor='#ff9d00' rippleColor='#efefef' 
-		                        label="Add a bill" />
+		                        label="Add a bill"	onClick={this.addBill.bind(this)} />
 		                &nbsp;&nbsp;&nbsp;
 						<FlatButton style={Styles.flatSettleUp} labelStyle={Styles.dasboardFlatLabel}
 		                        backgroundColor='#08ce00' hoverColor='#64dd17' rippleColor='#efefef' 

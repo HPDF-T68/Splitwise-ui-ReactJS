@@ -17,7 +17,7 @@ class App extends Component{
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
         this.friends =  { 1:'friend 1', 2:'friend 2'};
-        this.groups =   { 1:'group  1', 2:'group  2'};
+        this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
         this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                           2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
@@ -98,8 +98,11 @@ class App extends Component{
             //this.setState({page: 2});   
         }
     };
-    
     logout(){       this.setState({logged: false, signupLogin: 1});     }
+
+    addBill = (billDetails) => {
+        console.log(billDetails);
+    }
     
     render(){
         return(
@@ -113,7 +116,8 @@ class App extends Component{
                         logged={this.state.logged}                  username={this.user.username}
                         logout={this.logout.bind(this)}             account={this.account}
                         friends={this.friends}                      groups={this.groups}
-                        log={this.log}
+                        log={this.log}                              
+                        addBill={this.addBill.bind(this)}
                     />
                 <div className="error-display">
                     {(this.state.err===1)
