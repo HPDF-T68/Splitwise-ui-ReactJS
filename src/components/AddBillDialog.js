@@ -22,7 +22,9 @@ class AddBillDialog extends Component{
 		this.newBill={groupName:"", billName:"", billAmount:0, billAmount:null,notes:"", tmpFilepath:""};
 	}
 	componentWillReceiveProps(nextProps){
-		this.setState({modalOpen: true});
+		if(nextProps.click===true){
+			this.setState({modalOpen: true});	
+		}
 	};
 	handleClose = () => {
     	this.setState({modalOpen: false});

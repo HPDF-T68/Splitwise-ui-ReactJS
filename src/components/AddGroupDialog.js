@@ -23,7 +23,9 @@ class AddGroupDialog extends Component{
 		this.groupMembers=[];
 	};
 	componentWillReceiveProps(nextProps){
-		this.setState({modalOpen: true});
+		if(nextProps.click===1){
+			this.setState({modalOpen: true});
+		}
 	};
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){

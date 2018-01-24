@@ -21,7 +21,9 @@ class AddFriendDialog extends Component{
 		this.newFriends=[];
 	};
 	componentWillReceiveProps(nextProps){
-		this.setState({modalOpen: true});
+		if(nextProps.click===2){
+			this.setState({modalOpen: true});
+		}
 	};
 	updateCheck = (event, index, value) => {
 		if(event.target.checked){
