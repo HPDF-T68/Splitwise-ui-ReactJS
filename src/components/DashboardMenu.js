@@ -42,7 +42,9 @@ class DashboardMenu extends Component{
 					<AddGroupDialog 	click={this.state.modalOpen}	friends={this.props.friends}
 		       						addGroup={this.props.addGroup} 		/>
 		      	<Menu desktop={true} width={150} listStyle={{'paddingBottom':'0px','paddingTop':'0px'}}>
-			        <MenuItem leftIcon={<i className="material-icons">dashboard</i>} primaryText="Dashboard" innerDivStyle={Styles.menuNav}/>
+			        <MenuItem 	leftIcon={<i className="material-icons">dashboard</i>}
+			        			style={{marginLeft:'-7px',borderLeft:'7px solid #51b216'}}
+			        			primaryText="Dashboard" innerDivStyle={Styles.menuNavSelected}/>
 			        <MenuItem leftIcon={<i className="material-icons">flag</i>} primaryText="Recent activity" innerDivStyle={Styles.menuNav}/>
 			        <MenuItem leftIcon={<i className="material-icons">list</i>} primaryText="All expenses" innerDivStyle={Styles.menuNav}/>
 			        <br />
