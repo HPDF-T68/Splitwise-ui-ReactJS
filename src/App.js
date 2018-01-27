@@ -84,8 +84,7 @@ class App extends Component{
             for(let i=0,j=1; i < result.length; i++,j++){
                 tmpUsersList[j] = result[i].username;
             }
-            tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
-            that.setState({users:tmpUsersList, groups:tmpGroupsList});
+            that.setState({users:tmpUsersList});
             //that.setState({friends:tmpFriendList}, function(){console.log(that.state.friends);});
             //that.setState({users:tmpUsersList}, function(){console.log(that.state.users);});
         })
@@ -153,6 +152,48 @@ class App extends Component{
         .catch(function(error) {
             console.log('Request Failed:' + error);
         });
+
+
+        //------- getting names of all  the groups an user is associated with
+        var fetchAction =  require('node-fetch');
+        var url = "https://data.bathtub62.hasura-app.io/v1/query";
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer e738169cbb0ebbf3c89f96881ed6e549a3c79977bbff1f97"
+            }
+        };
+        var queryString = "SELECT group_name FROM groups WHERE member_username_1='"+that.user.username
+                            +"' OR member_username_2='"+that.user.username
+                            +"' OR member_username_3='"+that.user.username
+                            +"' OR member_username_4='"+that.user.username
+                            +"' OR member_username_5='"+that.user.username
+                            +"';";
+        var body = {
+            "type": "run_sql",
+            "args": { "sql": queryString }
+        };
+        requestOptions.body = JSON.stringify(body);
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            //console.log(result);
+            //console.log(result.result.length-1);
+            var groups_current_user = result.result.length-1;
+            for(let k=1; k < groups_current_user; k++){
+                tmpGroupsList[k] = result.result[k][0];
+            }
+            // update state here
+            //tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
+            that.setState({groups:tmpGroupsList});
+            //console.log(that.state.groups);
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+        });
     }
 //----------- end of component will mount
     //0 : Signup
@@ -197,6 +238,7 @@ class App extends Component{
             this.error(1);
         }
         else{
+            var that = this;
             var fetchAction =  require('node-fetch');
             var url = "https://auth.bathtub62.hasura-app.io/v1/signup";
             var res_username,res_username1,res_role, res_password,res_password1, res_id, res_e;
@@ -266,7 +308,35 @@ class App extends Component{
                     return response.json();
                 })
                 .then(function(result) {
-                    console.log(JSON.stringify(result));
+                    console.log(result);
+                    that.setState({signupLogin: 1});
+                    //------- add an empty row in friends
+                    var fetchAction =  require('node-fetch');
+                    var url = "https://data.bathtub62.hasura-app.io/v1/query";
+                    var requestOptions = {
+                        "method": "POST",
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    };
+                    var body = {
+                        "type": "insert",
+                        "args": {
+                            "table": "friends",
+                            "objects": [ { "total_friends": "0", "user_id": res_id } ]
+                        }
+                    };
+                    requestOptions.body = JSON.stringify(body);
+                    fetchAction(url, requestOptions)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(result) {
+                        console.log(result);
+                    })
+                    .catch(function(error) {
+                        console.log('Request Failed:' + error);
+                    });
                 })
                 .catch(function(error) {
                     console.log('Request Failed:' + error);
@@ -275,9 +345,9 @@ class App extends Component{
             .catch(function(error) {
                 console.log('Request Failed:' + error);
             });
-            console.log('saved new-user credentials');
+            //console.log('saved new-user credentials');
             //goto login page (values are already copied)
-            this.setState({signupLogin: 1});
+            //this.setState({signupLogin: 1});
         }
     };
 //-------- end up sign up
@@ -376,6 +446,7 @@ class App extends Component{
             this.error(6);
         }
         else{
+            //------- step 1 : get corresponding ids of all selected users from the list of potential friends
             var fetchAction =  require('node-fetch');
             var url = "https://data.bathtub62.hasura-app.io/v1/query";
             var requestOptions = {
@@ -408,6 +479,7 @@ class App extends Component{
                 .then(function(result) {
                     selected_friends_id[i]=result[0].user_id;
                     //console.log(selected_friends_id);
+                    //------- step 2 : inserting the id, username pairs of new friends for current-user
                     if(i === (selected_friends.length - 1)){
                         let col_name_1 = "friend_user_id_";
                         let col_name_2 = "friend_username_";
@@ -437,7 +509,7 @@ class App extends Component{
                             })
                             .then(function(result) {
                                 console.log(result);
-                                //when  all the insertion is done update the total_friends
+                                //------- step 3 : when  all the insertions are done update the total_friends
                                 var total_friends_update = that.state.noOfFriends + selected_friends.length;
                                 if(j === (selected_friends.length - 1)){
                                     var body = {
@@ -455,6 +527,8 @@ class App extends Component{
                                     })
                                     .then(function(result) {
                                         console.log(result);
+                                        //------- step 4 : update ui to display new friends
+                                        // and remove them from list of potential friends
                                         that.state.noOfFriends = total_friends_update;
                                         console.log("updated no of friends : "+that.state.noOfFriends);
                                         that.componentWillMount();
@@ -463,9 +537,9 @@ class App extends Component{
                                     .catch(function(error) {
                                         console.log('Request Failed:' + error);
                                     });
-                                    //-------------------------------------------
                                 }
-                                
+                                //-------------------------------------------
+                                //--- update other users' friend-list as well
                             })
                             .catch(function(error) {
                                 console.log('Request Failed:' + error);
@@ -483,12 +557,58 @@ class App extends Component{
     };
 //---------- end of add friends
     addGroup = (groupName, groupMembers) => {
-        console.log(groupName);
-        console.log(groupMembers);
+        var that = this;
+        //console.log(groupName);
+        //console.log(groupMembers);
         if(groupMembers.length <= 0){
             this.error(4);
         }
+        else{
+            var group_name = groupName;
+            var group_member_default = that.user.username;
+            var group_members = groupMembers;
+            var no_of_members = group_members.length + 1;
+            
+            var fetchAction =  require('node-fetch');
+            var url = "https://data.bathtub62.hasura-app.io/v1/query";
+            var requestOptions = {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            };
+            var body = {
+                "type": "insert",
+                "args": {
+                    "table": "groups",
+                    "objects": [
+                        {
+                            "group_name": group_name, "member_username_1": group_member_default,
+                            "member_username_2": group_members[0],
+                            "member_username_3": group_members[1],
+                            "member_username_4": group_members[2],
+                            "member_username_5": group_members[3],
+                            "number_of_members": no_of_members
+                        }
+                    ]
+                }
+            };
+            requestOptions.body = JSON.stringify(body);
+            fetchAction(url, requestOptions)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                console.log(result);
+                //-------- next : update users append to the group_ids for current user
+
+            })
+            .catch(function(error) {
+                console.log('Request Failed:' + error);
+            });
+        }
     };
+//----------- end of add group
 
     setCookie = (cname, cvalue, exdays) => {
 	    var d = new Date();
