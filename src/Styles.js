@@ -61,7 +61,7 @@ const Styles = {
                      backgroundColor:muiTheme.palette.baseDark, color:muiTheme.palette.primaryTextColor},
     addBillContent: {width:'fit-content', maxWidth: 'none'},
     addBillBody:    {padding:'10px 20px 5px 20px',minHeight:300},
-    addOtherBody:    {padding:'10px 20px 5px 20px'},
+    addOtherBody:   {padding:'10px 20px 5px 20px', minWidth:300, minHeight:200},
     groupLabel:     {width:'max-content',marginTop:14},
     groupOption:    {width:'max-content',marginTop:-10},
 

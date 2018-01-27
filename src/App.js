@@ -12,17 +12,18 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
-        this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false};
-        //cookie.load("onboarded")
-        this.user  =    { username: '', avatar: ''};
+        var usersList = {};
+        var friendList = {};
+        var groupsList = {};
+        
+        this.user  =    { hasura_id:null,username: '', avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
-        this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
-        this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
-        this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
+        
+        //this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
+        //this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
+        //this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
+
         this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                           2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
@@ -32,26 +33,68 @@ class App extends Component{
                           4:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                         };
-        this.demo =     { username: 'Rounak Polley',email: 'abc@def.ghi', password: 'ijkl'};
+
+        this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false,
+                          users:usersList, friends:friendList, groups:groupsList};
 
         this.error.bind(this);
         this.setCookie.bind(this);
         this.getCookie.bind(this);
+        this.componentWillMount();
     }
     componentWillMount(){
-        // If you have the auth token saved in offline storage
-        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
-        // headers = { "Authorization" : "Bearer " + authToken }
-        //that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
+        var that = this;
 		var userCookie   = this.getCookie("username");
 		var loggedCookie = this.getCookie("user_logged");
         var userAuth_token = this.getCookie("HASURA_AUTH_TOKEN");
+        var hasura_cookie = this.getCookie("hasura_id");
 		if(loggedCookie){
-			this.setState({logged:true});
-			//that.state.auth = true;
+			this.setState({logged:true});//that.state.auth = true;
 	        this.user.username = userCookie;
+            this.user.hasura_id = hasura_cookie;
+            //console.log(this.user);
 		}
+        var tmpUsersList = {};
+        var tmpFriendList = {};
+        var tmpGroupsList = {};
+        var fetchAction =  require('node-fetch');
+        var url = "https://data.bathtub62.hasura-app.io/v1/query";
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        };
+        var body = {
+            "type": "select",
+            "args": {
+                "table": "users",
+                "columns": [
+                    "username"
+                ]
+            }
+        };
+        requestOptions.body = JSON.stringify(body);
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            //console.log(result);
+            for(let i=0,j=1; i < result.length; i++,j++){
+                tmpUsersList[j] = result[i].username;
+            }
+            tmpFriendList = { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
+            tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
+            that.setState({users:tmpUsersList, friends:tmpFriendList, groups:tmpGroupsList});
+            //that.setState({friends:tmpFriendList}, function(){console.log(that.state.friends);});
+            //that.setState({users:tmpUsersList}, function(){console.log(that.state.users);});
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+        });
     }
+//----------- end of component will mount
     //0 : Signup
     //0 : no error, 1 : wrong email format (client side), 2 : wrong email/password, 3 : empty textfields
     onTitleClick(){
@@ -203,18 +246,22 @@ class App extends Component{
             return response.json();
         })
         .then(function(result) {
-            console.log(result);
+            //console.log(result);
             if(result.code === "invalid-creds"){
                 that.error(2);
             }
             else{
                 that.state.auth = true;
                 that.user.username = result.username;
-                var authToken = result.auth_token;
+                that.user.hasura_id = result.hasura_id;
+                //console.log(that.user);
+                var authToken = result.hasura_id;
+                var hasura_id = result.hasura_id;
                 //console.log('authenticated user');
                 that.setCookie("username",that.user.username,1);
                 that.setCookie("user_logged",true,1);
                 that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
+                that.setCookie("hasura_id",hasura_id,1);
                 that.setState({logged: true});
             }
         })
@@ -302,8 +349,8 @@ class App extends Component{
                         signup={this.signup.bind(this)}             login={this.login.bind(this)}               
                         logged={this.state.logged}                  username={this.user.username}
                         logout={this.logout.bind(this)}             account={this.account}
-                        users={this.users}
-                        friends={this.friends}                      groups={this.groups}
+                        users={this.state.users}
+                        friends={this.state.friends}                groups={this.state.groups}
                         log={this.log}                              
                         addBill={this.addBill.bind(this)}
                         addGroup={this.addGroup.bind(this)}         addFriends={this.addFriends.bind(this)}
@@ -369,6 +416,18 @@ class App extends Component{
                             />
                         :   <span></span>
                         }
+                        {(this.state.err===6)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Currently you can have atmost 10 friends"
+                                action="ok"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
                 </div>                    
                 </div>
                 </MuiThemeProvider>
@@ -378,3 +437,15 @@ class App extends Component{
 }
 
 export default App;
+
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
+        //that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
+
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
+        // If you have the auth token saved in offline storage
+        // var authToken = window.localStorage.getItem('HASURA_AUTH_TOKEN');
+        // headers = { "Authorization" : "Bearer " + authToken }
