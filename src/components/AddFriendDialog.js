@@ -63,7 +63,7 @@ class AddFriendDialog extends Component{
 						titleStyle={Styles.addBillTitle} 	bodyStyle={Styles.addOtherBody}
 						contentStyle={Styles.addBillContent}>
 				<div>
-						<span>Existing friends will be ignored</span>
+						<span>Select users to add them as friends</span>
 						<Divider style={Styles.modalDivider} />
 						<div>{this.state.users}</div>
 				</div>

@@ -16,7 +16,7 @@ class App extends Component{
         var friendList = {};
         var groupsList = {};
         
-        this.user  =    { hasura_id:null,username: '', avatar: ''};
+        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
 
         this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
         
@@ -84,11 +84,71 @@ class App extends Component{
             for(let i=0,j=1; i < result.length; i++,j++){
                 tmpUsersList[j] = result[i].username;
             }
-            tmpFriendList = { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
             tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
-            that.setState({users:tmpUsersList, friends:tmpFriendList, groups:tmpGroupsList});
+            that.setState({users:tmpUsersList, groups:tmpGroupsList});
             //that.setState({friends:tmpFriendList}, function(){console.log(that.state.friends);});
             //that.setState({users:tmpUsersList}, function(){console.log(that.state.users);});
+        })
+        .catch(function(error) {
+            console.log('Request Failed:' + error);
+        });
+        var fetchAction =  require('node-fetch');
+        var url = "https://data.bathtub62.hasura-app.io/v1/query";
+        var requestOptions = {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        };
+        var body = {
+            "type": "select",
+            "args": {
+                "table": "friends",
+                "columns": [
+                    "total_friends",
+                    "friend_username_1","friend_username_2","friend_username_3","friend_username_4","friend_username_5",
+                    "friend_username_6","friend_username_7","friend_username_8","friend_username_9","friend_username_10"
+                ],
+                "where": {
+                    "user_id": {
+                        "$eq": this.user.hasura_id//101//this.user.hasura_id
+                    }
+                }
+            }
+        };
+        requestOptions.body = JSON.stringify(body);
+        fetchAction(url, requestOptions)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            //console.log(result);
+            that.state.noOfFriends = result[0].total_friends;
+            var tmpStr = "friend_username_";
+            for(let i=0,j=1; i < that.state.noOfFriends; i++,j++){
+                let tmpCol = tmpStr + j;
+                tmpFriendList[j] = result[0][tmpCol];
+            }
+            that.setState({friends:tmpFriendList});
+            //--- now show users who can be friends
+            var TMPusers   = that.state.users;
+            var TMPfriends = that.state.friends;
+            var users_not_friends = {};
+            var k = 1;
+            for(let i=1; i<=Object.keys(TMPusers).length; i++){
+              let check = 0;
+              for(let j=1; j<=Object.keys(TMPfriends).length; j++){
+                if((TMPusers[i]===TMPfriends[j])||(TMPusers[i]===that.user.username)){
+                  check = 1;
+                }
+              }
+              if(check===0){
+                users_not_friends[k] = TMPusers[i];
+                k++;
+              }
+            }
+            that.setState({users:users_not_friends});
+            //console.log(users_not_friends);
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
@@ -307,8 +367,121 @@ class App extends Component{
         console.log(billDetails);
     };
     addFriends = (newFriends) => {
-        console.log(newFriends);
+        var that = this;
+        //console.log(newFriends);
+        var selected_friends =  newFriends;
+        var selected_friends_id=[]; // this array will contain the retrieved ids of the friends
+
+        if((that.state.noOfFriends + selected_friends.length) >10){
+            this.error(6);
+        }
+        else{
+            var fetchAction =  require('node-fetch');
+            var url = "https://data.bathtub62.hasura-app.io/v1/query";
+            var requestOptions = {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                }
+            };
+
+            for(let i=0; i < selected_friends.length; i++){
+                var body = {
+                    "type": "select",
+                    "args": {
+                        "table": "users",
+                        "columns": [
+                            "user_id"
+                        ],
+                        "where": {
+                            "username": {
+                                "$eq": selected_friends[i]
+                            }
+                        }
+                    }
+                };
+                requestOptions.body = JSON.stringify(body);
+                fetchAction(url, requestOptions)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(result) {
+                    selected_friends_id[i]=result[0].user_id;
+                    //console.log(selected_friends_id);
+                    if(i === (selected_friends.length - 1)){
+                        let col_name_1 = "friend_user_id_";
+                        let col_name_2 = "friend_username_";
+                        let friend_counter = that.state.noOfFriends;
+                        for(let j=0; j < selected_friends.length; j++){
+                            friend_counter++;
+                            let COL_friend_user_id  = col_name_1 + friend_counter;
+                            let COL_friend_username = col_name_2 + friend_counter;
+                            var c1  = JSON.stringify(COL_friend_user_id);
+                            var c1  = JSON.stringify(COL_friend_user_id);
+                            //console.log(COL_friend_username);
+                            var body = {
+                                "type": "update",
+                                "args": {
+                                    "table": "friends",
+                                    "where": { "user_id": { "$eq": that.user.hasura_id  } },
+                                    "$set": {
+                                        [COL_friend_user_id]  :  selected_friends_id[j],
+                                        [COL_friend_username] : selected_friends[j]
+                                    }
+                                }
+                            };
+                            requestOptions.body = JSON.stringify(body);
+                            fetchAction(url, requestOptions)
+                            .then(function(response) {
+                                return response.json();
+                            })
+                            .then(function(result) {
+                                console.log(result);
+                                //when  all the insertion is done update the total_friends
+                                var total_friends_update = that.state.noOfFriends + selected_friends.length;
+                                if(j === (selected_friends.length - 1)){
+                                    var body = {
+                                        "type": "update",
+                                        "args": {
+                                            "table": "friends",
+                                            "where": { "user_id": { "$eq": that.user.hasura_id } },
+                                            "$set":  { "total_friends" : total_friends_update }
+                                        }
+                                    };
+                                    requestOptions.body = JSON.stringify(body);
+                                    fetchAction(url, requestOptions)
+                                    .then(function(response) {
+                                        return response.json();
+                                    })
+                                    .then(function(result) {
+                                        console.log(result);
+                                        that.state.noOfFriends = total_friends_update;
+                                        console.log("updated no of friends : "+that.state.noOfFriends);
+                                        that.componentWillMount();
+                                        that.error(1001);
+                                    })
+                                    .catch(function(error) {
+                                        console.log('Request Failed:' + error);
+                                    });
+                                    //-------------------------------------------
+                                }
+                                
+                            })
+                            .catch(function(error) {
+                                console.log('Request Failed:' + error);
+                            });
+                        }
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Request Failed:' + error);
+                });
+            }    
+        }
+        // end of else i.e. when no of friends <=  10
+        
     };
+//---------- end of add friends
     addGroup = (groupName, groupMembers) => {
         console.log(groupName);
         console.log(groupMembers);
@@ -421,6 +594,18 @@ class App extends Component{
                             <Snackbar
                                 open={this.state.errorOpen}
                                 message="Currently you can have atmost 10 friends"
+                                action="ok"
+                                autoHideDuration={5000}
+                                onActionClick={this.handleError1Click.bind(this)}
+                                onRequestClose={this.handleErrorRequestClose.bind(this)}
+                            />
+                        :   <span></span>
+                        }
+                        {(this.state.err===1001)
+                        ?
+                            <Snackbar
+                                open={this.state.errorOpen}
+                                message="Selected friend(s) added successfully"
                                 action="ok"
                                 autoHideDuration={5000}
                                 onActionClick={this.handleError1Click.bind(this)}
