@@ -18,7 +18,7 @@ class App extends Component{
         
         this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
 
-        this.account =  { totalBalance: 10, youOwe: 20, youAreOwed: 30};
+        this.account =  { totalBalance: 100, youOwe: 20, youAreOwed: 30};
         
         //this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
         //this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
@@ -39,7 +39,9 @@ class App extends Component{
 
         this.updateFriends.bind(this);
         this.updateGroups.bind(this);
-        
+        //this.updateUserAccount.bind(this);
+        //this.updateUserlogs.bind(this);
+
         this.error.bind(this);
         this.setCookie.bind(this);
         this.getCookie.bind(this);
@@ -63,6 +65,10 @@ class App extends Component{
     APPcomponentWillMount(){
         this.updateFriends();
         this.updateGroups();
+        //get account balance of current user
+        //this.updateUserAccount();
+        //get the logs for current user
+        //this.updateUserlogs();
     }
 //----------   update friends after adding new friends or on mounting    
     updateFriends(){
@@ -194,12 +200,26 @@ class App extends Component{
             console.log('Request Failed:' + error);
         });
     }
+// end of updating groups
+//------------------
+    updateUserlogs(){
+
+    }
+
+//----- end of update log()
+//------------------
+    updateUserAccount(){
+
+    }
+
+//----- end of update account()
 //----------- end of component will mount
 
 
     onTitleClick(){
-        this.setState({page:0});
-        console.log(this.state.page);
+        //this.setState({page:0});
+        //console.log(this.state.page);
+        window.open("https://github.com/rounakpolley/", "_blank");
     }
     signupPage(){   this.setState({signupLogin: 0});    }
     loginPage(){    this.setState({signupLogin: 1});    }
@@ -390,8 +410,11 @@ class App extends Component{
                 that.setCookie("HASURA_AUTH_TOKEN",authToken,1);
                 that.setCookie("hasura_id",hasura_id,1);
                 that.setState({logged: true});
+
                 that.updateFriends();//that.APPcomponentWillMount();
                 that.updateGroups();
+                //that.updateUserAccount();
+                //that.updateUserlogs();
             }
         })
         .catch(function(error) {
@@ -432,10 +455,16 @@ class App extends Component{
         });  
     };
 //----------   end of logout
+
 //----------- and new bill  and update all  logs and the user accounts
     addBill = (billDetails) => {
+        var that = this;
         console.log(billDetails);
+        //that.updateUserAccount();
+        //that.updateUserlogs();
     };
+//--- end of adding bills
+
 //----------   add new friends
     addFriends = (newFriends) => {
         var that = this;

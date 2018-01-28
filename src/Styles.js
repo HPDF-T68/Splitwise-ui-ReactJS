@@ -68,6 +68,14 @@ const Styles = {
     flatModalCancel:{borderRadius:5, marginTop:5, border:'1px solid #de0000',marginRight:10},
     flatModalDone:  {borderRadius:5, marginTop:5, border:'1px solid #06b11a',marginRight:5},
     modalDivider:   {marginTop:'10px',marginBottom:'10px',marginLeft:'-5px',marginRight:'-5px'},
+
+    asideBox:       {width:175, borderRadius:5, border:'1px solid #e8b38c', backgroundColor:'#f9ebe1', 
+                     margin:'25px 0px 0px 20px', padding:'0px 10px 0px 5px', fontSize:'smaller',
+                     color:muiTheme.palette.subTextColor},
+    asideOther:     {width:175, borderRadius:5, border:'1px solid #7fa237', backgroundColor:'#b5ff26', 
+                     margin:'15px 0px 0px 20px', padding:'0px 10px 0px 5px'},
+    asideBoxLi:     {marginLeft:-15},
+    asideLink:      {fontSize:'smaller', color:muiTheme.palette.subTextColor, textDecoration:'none'}
 };
 //  width: fit-content; margin: auto;
 export default Styles;
