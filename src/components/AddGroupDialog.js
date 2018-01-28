@@ -47,7 +47,7 @@ class AddGroupDialog extends Component{
 	addDone = () => {
 		this.groupName = this.state.groupName;
 		this.groupMembers = this.state.selectedFriends;
-		this.setState({modalOpen: false});
+		//this.setState({modalOpen: false});
 	    this.props.addGroup(this.groupName,this.groupMembers);
 	    this.state.selectedFriends=[];	
   	};
