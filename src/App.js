@@ -39,16 +39,19 @@ class App extends Component{
 
         this.updateFriends.bind(this);
         this.updateGroups.bind(this);
-        //this.updateUserAccount.bind(this);
-        //this.updateUserlogs.bind(this);
+        this.updateUserAccount.bind(this);
+        this.updateUserlogs.bind(this);
+		this.insertLog.bind(this);
+		this.insertAccount.bind(this);
 
         this.error.bind(this);
         this.setCookie.bind(this);
         this.getCookie.bind(this);
         //------------
         
-        //this.componentWillMount();
+        //this.SWcomponentWillMount();
     }
+    //SWcomponentWillMount()
     componentWillMount(){
         var userCookie   = this.getCookie("username");
         var loggedCookie = this.getCookie("user_logged");
@@ -65,10 +68,8 @@ class App extends Component{
     APPcomponentWillMount(){
         this.updateFriends();
         this.updateGroups();
-        //get account balance of current user
-        //this.updateUserAccount();
-        //get the logs for current user
-        //this.updateUserlogs();
+        this.updateUserAccount(); //get account balance of current user
+        this.updateUserlogs();    //get the logs for current user
     }
 //----------   update friends after adding new friends or on mounting    
     updateFriends(){
@@ -194,28 +195,183 @@ class App extends Component{
             // update state here
             //tmpGroupsList = { 1:'group  1', 2:'group  2', 3:'group  3'};
             that.setState({groups:tmpGroupsList});
-            console.log(that.state.groups);
+            //console.log(that.state.groups);
         })
         .catch(function(error) {
             console.log('Request Failed:' + error);
         });
     }
 // end of updating groups
-//------------------
+//------------------ display the list of expenditures
     updateUserlogs(){
+        var that = this;
+        var tmpLog = {};
+        var noOfLogs = 0;
+        //that.user.hasura_id
+            //noOfLogs = get count of results
+            //for(let i=0; i<noOfLogs; i++)
+                //tmpLog[i].name
+                //tmpLog[i].group
+                //tmpLog[i].year
+                //tmpLog[i].month
+                //tmpLog[i].day
+                //tmpLog[i].paidBy = tmpLog[i].lentBy
+                //tmpLog[i].paid
+                //tmpLog[i].lent
+
+            //that.log = tmpLog
 
     }
 
 //----- end of update log()
-//------------------
+//------------------  displays the account status
     updateUserAccount(){
-
+        var that = this;
+        //that.user.hasura_id
+            //that.account.totalBalance
+            //that.account.youOwe
+            //that.account.youAreOwed
     }
 
 //----- end of update account()
 //----------- end of component will mount
 
+    dateTime(){
+        var billTime = {};
+        var today = new Date();
+        var time = today.getTime();
+        var date = today.getDate();
+        var month = "";
+        var mm = today.getMonth()+1;
+        var year = today.getFullYear();
+        switch(mm){
+             case 1 :   month = "JAN";      break;
+             case 2 :   month = "FEB";      break;
+             case 3 :   month = "MAR";      break;
+             case 4 :   month = "APR";      break;
+             case 5 :   month = "MAY";      break;
+             case 6 :   month = "JUN";      break;
+             case 7 :   month = "JUL";      break;
+             case 8 :   month = "AUG";      break;
+             case 9 :   month = "SEP";      break;
+             case 10 :  month = "OCT";      break;
+             case 11 :  month = "NOV";      break;
+             case 12 :  month = "DEC";      break;
+        }
+        billTime.date = date;
+        billTime.month = month;
+        billTime.year = year;
+        billTime.time = time;
+        //console.log(billTime);
+        return (billTime);
+    }
+//  end of date time
+	
+	//--- start of inserting account
+	insertAccount(accountDetails){					console.log(accountDetails);
+		var that =  this;
+		for(let i=0; i< accountDetails['user_id_list'].length ; i++){
+			
+			var user_total_balance = 0;
+			var user_user_owes = 0;
+			var user_user_owed = 0;
+			//fetch
+			var fetchAction =  require('node-fetch');
+			var url = "https://data.bathtub62.hasura-app.io/v1/query";
+			var requestOptions = { "method": "POST", "headers": {  "Content-Type": "application/json" } };
+			var body = { "type": "select",
+			    "args": { "table": "users",
+			        "columns": [ "total_balance", "user_owed", "user_owes" ],
+			        "where": {  "user_id": {  "$eq": accountDetails['user_id_list'][i] } }
+			    }
+			};									requestOptions.body = JSON.stringify(body);
+			fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+			.then(function(result) {									//console.log(result);
+				//current user
+				if(accountDetails['user_id_list'][i] === that.user.hasura_id){
+					user_total_balance = parseFloat(result[0]["total_balance"]); //+ logDetails.insert_paid_amount;
+					user_user_owes     = parseFloat(result[0]["user_owes"]);
+					user_user_owed     = parseFloat(result[0]["user_owed"]) + accountDetails['account_paid'];
+					//update
+					var body = { "type": "update",
+					    "args": { "table": "users", "where": { "user_id": { "$eq": accountDetails['user_id_list'][i] } },
+					        "$set": {
+					            "total_balance": user_total_balance,
+					            "user_owes": user_user_owes,
+					            "user_owed": user_user_owed
+					        }
+					    }
+					};									requestOptions.body = JSON.stringify(body);
+					fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+					.then(function(result) { console.log(result); 
+						//update display for current user
+					})
+					.catch(function(error) { console.log('Request Failed:' + error); });
+				}
+				else{
+					user_total_balance = parseFloat(result[0]["total_balance"]); //- logDetails.insert_lent_amount;
+					user_user_owes     = parseFloat(result[0]["user_owes"]) + (accountDetails['account_paid'] / accountDetails['user_id_list'].length);
+					user_user_owed     = parseFloat(result[0]["user_owed"]);
+					//update
+					console.log("updating account for :"+(accountDetails['user_id_list'][i])+" "+user_total_balance+" "+user_user_owes);
+					var body = { "type": "update",
+					    "args": { "table": "users", "where": { "user_id": { "$eq": accountDetails['user_id_list'][i] } },
+					        "$set": {
+					            "total_balance": user_total_balance,
+					            "user_owes": user_user_owes,
+					            "user_owed": user_user_owed
+					        }
+					    }
+					};									requestOptions.body = JSON.stringify(body);
+					fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+					.then(function(result) { console.log(result); })
+					.catch(function(error) { console.log('Request Failed:' + error); });
+				}
+			})
+			.catch(function(error) { console.log('Request Failed:' + error); });
+		}
+	}
+    //--- end   of account insert
 
+	//--- start of inserting log
+	insertLog(logDetails){					console.log(logDetails);
+		var that =  this;
+		console.log("inserting log for :"+logDetails.insert_for_user_id);
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "insert",
+		    "args": {
+		        "table": "logss",
+		        "objects": [
+		            {
+		                "year": logDetails.insert_year,
+		                "group_name": logDetails.insert_group_name,
+		                "notes": logDetails.insert_notes,
+		                "paid_by_username": logDetails.insert_paid_by_username,
+		                "bill_id": logDetails.insert_bill_id,
+		                "date": logDetails.insert_date,
+		                "paid_amount": logDetails.insert_paid_amount,
+		                "lent_amount": logDetails.insert_lent_amount,
+		                "month": logDetails.insert_month,
+		                "for_user_id": logDetails.insert_for_user_id,
+		                "file": logDetails.insert_file,
+		                "bill_name": logDetails.insert_bill_name
+		            }
+		        ]
+		    }
+		};					requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) { 				//console.log(result);
+			//that.insertAccount(logDetails);	
+					//update display for current user
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
+	
+	}
+	//--- end   of log insert
+	
+	
     onTitleClick(){
         //this.setState({page:0});
         //console.log(this.state.page);
@@ -224,8 +380,7 @@ class App extends Component{
     signupPage(){   this.setState({signupLogin: 0});    }
     loginPage(){    this.setState({signupLogin: 1});    }
     
-    ValidateEmail(mail)   
-    {  
+    ValidateEmail(mail) {  
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))  {  return (true);  }   
         return (false);  
     }  
@@ -457,11 +612,94 @@ class App extends Component{
 //----------   end of logout
 
 //----------- and new bill  and update all  logs and the user accounts
-    addBill = (billDetails) => {
+    addBill = (billDetails) => {					//console.log(billDetails);
         var that = this;
-        console.log(billDetails);
-        //that.updateUserAccount();
-        //that.updateUserlogs();
+        var billTime = this.dateTime();
+
+        var noOfGroupMembers = 0;
+        var allMemberUsername = {};
+        var allMemberID = [];
+
+        var accountDetails = {};
+		var account_user_ids = [];
+		var account_paid = billDetails.billAmount;
+
+
+        //vars for the columns of logs
+        var logDetails = {};
+        logDetails.insert_bill_id          = billTime.time;
+        logDetails.insert_for_user_id      = null;
+        logDetails.insert_bill_name        = billDetails.billName;
+        logDetails.insert_date             = billTime.date;
+        logDetails.insert_month            = billTime.month;
+        logDetails.insert_group_name       = billDetails.groupName;
+        logDetails.insert_paid_by_username = that.user.username;
+        logDetails.insert_paid_amount      = billDetails.billAmount;
+        logDetails.insert_lent_amount      = 0;
+        logDetails.insert_notes            = billDetails.notes;
+        logDetails.insert_file             = billDetails.tmpFilepath;
+        logDetails.insert_year             = billTime.year;
+		//console.log(logDetails);
+	//get all the group member username then their corresponding ids
+		//fetch usernames
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "select",
+		    "args": { "table": "groups",
+		        "columns": [ "number_of_members", "member_username_1", "member_username_2",
+		            		 "member_username_3", "member_username_4", "member_username_5" ],
+		        "where": { "group_name": { "$eq": billDetails.groupName} }
+		    }
+		};
+		requestOptions.body = JSON.stringify(body);		fetchAction(url, requestOptions)
+		.then(function(response) { return response.json(); })
+		.then(function(result) {									//console.log(result);
+			noOfGroupMembers     = result[0]["number_of_members"];
+			allMemberUsername[1] = result[0]["member_username_1"];
+			allMemberUsername[2] = result[0]["member_username_2"];
+			allMemberUsername[3] = result[0]["member_username_3"];
+			allMemberUsername[4] = result[0]["member_username_4"];
+			allMemberUsername[5] = result[0]["member_username_5"];
+
+			//fetch ids (no need to fetch for current_user)
+			//--- start of for loop
+			for(let i=1; i<=noOfGroupMembers; i++){
+				
+				if(allMemberUsername[i] != that.user.username){				//eliminate current_user
+					var body = { "type": "select",
+					    "args": { "table": "users", "columns": [ "user_id" ],
+					        "where": { "username": { "$eq": allMemberUsername[i] } }
+					    }
+					};
+					requestOptions.body = JSON.stringify(body);		fetchAction(url, requestOptions)
+					.then(function(response) { return response.json(); })
+					.then(function(result) {							//console.log(result);
+						logDetails.insert_for_user_id = result[0]["user_id"];
+						logDetails.insert_lent_amount = ( (logDetails.insert_paid_amount) / (noOfGroupMembers) );
+
+						account_user_ids[i] = logDetails.insert_for_user_id;
+						//console.log(logDetails);
+						that.insertLog(logDetails);
+					})
+					.catch(function(error) {
+						console.log('Request Failed:' + error);
+					});
+				}
+			}
+			//--- end of for loop still in results of 1st api-call
+
+			// call for current_user
+				logDetails.insert_for_user_id = that.user.hasura_id;
+				logDetails.insert_lent_amount = 0;
+				that.insertLog(logDetails);
+
+				account_user_ids[0] = parseInt(that.user.hasura_id);
+				accountDetails = {'user_id_list':account_user_ids, 'account_paid':account_paid};
+				that.insertAccount(accountDetails);
+				console.log(accountDetails);
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
     };
 //--- end of adding bills
 
