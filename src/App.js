@@ -12,19 +12,12 @@ import Snackbar from 'material-ui/Snackbar';
 class App extends Component{
     constructor(){
         super();
-        var usersList = {};
-        var friendList = {};
-        var groupsList = {};
-        
-        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
-
-        this.account =  { totalBalance: 100, youOwe: 20, youAreOwed: 30};
-        
-        //this.users =    { 1:'user 1', 2:'user 2', 3:'user 3', 4:'user 4', 5:'user 5', 6:'user 6', 7:'user 7'};
-        //this.friends =  { 1:'friend 1', 2:'friend 2', 3:'friend 3', 4:'friend 4'};
-        //this.groups =   { 1:'group  1', 2:'group  2', 3:'group  3'};
-
-        this.log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
+        var usersList 	= {};
+        var friendList 	= {};
+        var groupsList 	= {};
+        var log 		= {};
+        /*
+        var log =      { 1:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                           2:{'name':'Expense name 2','group':'group 2','year':2017,'month':'DEC','day':31,
                             'paidBy':'friend 1',paid:84,'lentBy':'friend 2','lent':42},
@@ -33,9 +26,12 @@ class App extends Component{
                           4:{'name':'Expense name 1','group':'group 1','year':2017,'month':'DEC','day':25,
                             'paidBy':'friend 1',paid:14,'lentBy':'friend 1','lent':14},
                         };
+        */
+        this.user  =    { hasura_id:null, username: '', noOfFriends:0, avatar: ''};
+        this.account =  { totalBalance: null, youOwe: null, youAreOwed: null};
 
         this.state =    { page:1 , signupLogin: 0, logged: false, err: 0, errorOpen: false,
-                          users:usersList, friends:friendList, groups:groupsList};
+                          users:usersList, friends:friendList, groups:groupsList, log:log};
 
         this.updateFriends.bind(this);
         this.updateGroups.bind(this);
@@ -48,8 +44,7 @@ class App extends Component{
         this.setCookie.bind(this);
         this.getCookie.bind(this);
         //------------
-        
-        //this.SWcomponentWillMount();
+        //this.componentWillMount();
     }
     //SWcomponentWillMount()
     componentWillMount(){
@@ -155,7 +150,7 @@ class App extends Component{
             console.log('Request Failed:' + error);
         });
     }
-//----------- end of update friends   
+ //----------- end of update friends   
 //----------- updating the groups in a similar way 
     updateGroups(){
         var that = this;
@@ -205,34 +200,69 @@ class App extends Component{
 //------------------ display the list of expenditures
     updateUserlogs(){
         var that = this;
-        var tmpLog = {};
-        var noOfLogs = 0;
-        //that.user.hasura_id
-            //noOfLogs = get count of results
-            //for(let i=0; i<noOfLogs; i++)
-                //tmpLog[i].name
-                //tmpLog[i].group
-                //tmpLog[i].year
-                //tmpLog[i].month
-                //tmpLog[i].day
-                //tmpLog[i].paidBy = tmpLog[i].lentBy
-                //tmpLog[i].paid
-                //tmpLog[i].lent
+        var user_owes_dollar = 0;
+        var user_owed_dollar = 0;
+        var logs = {};
+        
+		var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = { "type": "select",
+		    "args": { "table": "logss",
+		        "columns":["paid_by_username","paid_amount","lent_amount","year","date","month","bill_name","notes","group_name","file"],
+		        "where": { "for_user_id": { "$eq": that.user.hasura_id }  }
+		    }
+		};		requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) {				//console.log(result);
+			//fill the logs and calculate account
+			for(let i = 0; i < result.length; i++){
+				var tmpLog = {'name':null,'group':null,'year':null,'month':null,'day':null,'paidBy':null,
+							  paid:null,'lentBy':null,'lent':null};
 
-            //that.log = tmpLog
+				tmpLog['name'] 		= result[i]['bill_name'];
+				tmpLog['group'] 	= result[i]['group_name'];
+				tmpLog['year'] 		= result[i]['year'];
+				tmpLog['month'] 	= result[i]['month'];
+				tmpLog['day'] 		= result[i]['date'];
+				tmpLog['paidBy'] 	= result[i]['paid_by_username'];
+				tmpLog['paid'] 		= result[i]['paid_amount'];
+				tmpLog['lentBy'] 	= result[i]['paid_by_username'];
+				tmpLog['lent'] 		= result[i]['lent_amount'];
 
+				tmpLog['notes'] 	= result[i]['notes'];
+				tmpLog['file_path'] = result[i]['file'];
+				
+				logs[i+1]  = tmpLog;
+				if(result[i]['lent_amount'] === 0)	{ user_owed_dollar += result[i]['paid_amount']; }
+				else								{ user_owes_dollar += result[i]['lent_amount']; }
+			}
+			that.account.youOwe     = user_owes_dollar;
+ 			that.account.youAreOwed = user_owed_dollar;
+			that.setState({log:logs}, function(){console.log(that.state.log);})
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
     }
-
 //----- end of update log()
 //------------------  displays the account status
     updateUserAccount(){
         var that = this;
-        //that.user.hasura_id
-            //that.account.totalBalance
-            //that.account.youOwe
-            //that.account.youAreOwed
+        //get only total_balance
+        var fetchAction =  require('node-fetch');
+		var url = "https://data.bathtub62.hasura-app.io/v1/query";
+		var requestOptions = { "method": "POST", "headers": { "Content-Type": "application/json" } };
+		var body = {
+		    "type": "select",
+		    "args": { "table": "users", "columns": [ "total_balance" ],
+		        "where": { "user_id": { "$eq": that.user.hasura_id } }
+		    }
+		};		requestOptions.body = JSON.stringify(body);
+		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
+		.then(function(result) {				//console.log(result);
+			that.account.totalBalance = result[0]["total_balance"];
+		})
+		.catch(function(error) { console.log('Request Failed:' + error); });
     }
-
 //----- end of update account()
 //----------- end of component will mount
 
@@ -386,7 +416,8 @@ class App extends Component{
     }  
     error = (val) => {
         this.setState({ errorOpen: true});
-        this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+        //this.setState({err: val}, function(){console.log("error in app.js - "+this.state.err);});
+        this.setState({err: val});
     };
     
     handleError1Click = () => {
@@ -467,7 +498,7 @@ class App extends Component{
                                 "password": res_password,
                                 "avatar": null,
                                 "user_id": res_id,
-                                "total_balance": "0",
+                                "total_balance": "100",
                                 "user_owes": "0",
                                 "user_owed": "0",
                                 "username": res_username,
@@ -696,8 +727,9 @@ class App extends Component{
 
 				account_user_ids[0] = parseInt(that.user.hasura_id);
 				accountDetails = {'user_id_list':account_user_ids, 'account_paid':account_paid};
-				that.insertAccount(accountDetails);
-				console.log(accountDetails);
+				//that.insertAccount(accountDetails);
+				//console.log(accountDetails);
+				//call  for ui update
 		})
 		.catch(function(error) { console.log('Request Failed:' + error); });
     };
@@ -869,8 +901,7 @@ class App extends Component{
             .then(function(response) {
                 return response.json();
             })
-            .then(function(result) {
-                console.log(result);
+            .then(function(result) {		//console.log(result);
                 //-------- next : update users append to the group_ids for current user
                 that.updateGroups();
                 that.error(1002);
@@ -919,7 +950,7 @@ class App extends Component{
                         logout={this.logout.bind(this)}             account={this.account}
                         users={this.state.users}
                         friends={this.state.friends}                groups={this.state.groups}
-                        log={this.log}                              
+                        log={this.state.log}                              
                         addBill={this.addBill.bind(this)}
                         addGroup={this.addGroup.bind(this)}         addFriends={this.addFriends.bind(this)}
                     />

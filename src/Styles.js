@@ -5,7 +5,7 @@ const Styles = {
     padding0:       {padding:0},
     appbarTitle:    {cursor: 'pointer', marginLeft: 200, width: 'wrap-content',
                      fontSize: 16, fontFamily: 'serif', letterSpacing: 4},
-    hasuraLogo:     {width:220, height:200, marginTop:50},
+    hasuraLogo:     {width:220, height:200, marginTop:30},
     subheader:      {color:muiTheme.palette.subHeaderColor, fontWeight:100},
     appbarAvatar:   {marginRight:130, marginTop:0, width: 300, color: muiTheme.palette.primaryTextColor},
     labelText:      {textTransform: 'none', color: muiTheme.palette.primaryTextColor },
@@ -75,7 +75,8 @@ const Styles = {
     asideOther:     {width:175, borderRadius:5, border:'1px solid #7fa237', backgroundColor:'#b5ff26', 
                      margin:'15px 0px 0px 20px', padding:'0px 10px 0px 5px'},
     asideBoxLi:     {marginLeft:-15},
-    asideLink:      {fontSize:'smaller', color:muiTheme.palette.subTextColor, textDecoration:'none'}
+    asideLink:      {fontSize:'smaller', color:muiTheme.palette.subTextColor, textDecoration:'none'},
+    disclaimer:     {color:muiTheme.palette.subHeaderColor, fontSize:'smaller', paddingLeft:8}
 };
 //  width: fit-content; margin: auto;
 export default Styles;
