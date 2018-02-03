@@ -16,7 +16,6 @@ class DashboardMain extends Component{
 		//console.log(this.props.log);
 		const log = [];
 		this.state = {log:log, modalAddBill:false};
-		//this.componentWillMount();
 	}
 	componentWillMount(){
 		const log = [];
@@ -29,6 +28,9 @@ class DashboardMain extends Component{
 		}
 		this.state = {log:log};
 		console.log(this.state.log);
+	}
+	componentWillReceiveProps(){
+		this.componentWillMount();
 	}
 	addBill(){
 		this.setState({ modalAddBill: true});

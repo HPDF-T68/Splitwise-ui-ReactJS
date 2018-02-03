@@ -393,8 +393,7 @@ class App extends Component{
 		};					requestOptions.body = JSON.stringify(body);
 		fetchAction(url, requestOptions).then(function(response) { return response.json(); })
 		.then(function(result) { 				//console.log(result);
-			//that.insertAccount(logDetails);	
-					//update display for current user
+            that.updateUserlogs();
 		})
 		.catch(function(error) { console.log('Request Failed:' + error); });
 	
@@ -707,8 +706,8 @@ class App extends Component{
 					.then(function(response) { return response.json(); })
 					.then(function(result) {							//console.log(result);
 						logDetails.insert_for_user_id = result[0]["user_id"];
-						logDetails.insert_lent_amount = ( (logDetails.insert_paid_amount) / (noOfGroupMembers) );
-
+						logDetails.insert_lent_amount = ( (logDetails.insert_paid_amount) / (noOfGroupMembers) ).toFixed(2);
+                        
 						account_user_ids[i] = logDetails.insert_for_user_id;
 						//console.log(logDetails);
 						that.insertLog(logDetails);
@@ -727,8 +726,7 @@ class App extends Component{
 
 				account_user_ids[0] = parseInt(that.user.hasura_id);
 				accountDetails = {'user_id_list':account_user_ids, 'account_paid':account_paid};
-				//that.insertAccount(accountDetails);
-				//console.log(accountDetails);
+			
 				//call  for ui update
 		})
 		.catch(function(error) { console.log('Request Failed:' + error); });
