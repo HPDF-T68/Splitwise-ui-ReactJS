@@ -27,7 +27,7 @@ class CurrentUser extends Component{
     }
     your_account(){
         //alert("Modifying account : not allowed");
-        this.props.chooseAvatarOpen();
+        //this.props.chooseAvatarOpen();
     }
     fairness_calculators(){
         alert("Fairness Calculators : coming soon");
